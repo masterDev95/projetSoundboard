@@ -1,3 +1,8 @@
+export interface ISound {
+    name: string,
+    duration: string
+}
+
 export class Sound {
     static lastId = 0;
 
