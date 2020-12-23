@@ -1,0 +1,12 @@
+<ion-grid>
+  <ion-row *ngFor="let sound of sounds">
+    <ion-col size-md="8" offset-md="2">
+      <ion-item>
+        <ion-label>
+          <h2>{{ sound.name }}</h2>
+          <p>Durée: {{sound.duration}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+</ion-grid>
