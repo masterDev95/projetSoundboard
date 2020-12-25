@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 
-import { ISound } from '../sound.model';
+import { Sound } from '../sound.model';
 import { SoundService } from '../sound.service';
 
 @Component({
@@ -28,10 +28,10 @@ export class SoundAddPage implements OnInit {
 
   saveSound() {
     if (this.addSoundForm.valid) {
-      let newSound: ISound = {
-        name: this.addSoundForm.value.name,
-        duration: this.addSoundForm.value.duration
-      };
+      let newSound: Sound = new Sound(
+        this.addSoundForm.value.name,
+        this.addSoundForm.value.duration
+      );
       this.soundService.addSound(newSound);
       this.navController.navigateBack('/home');
       console.log(this.soundService.soundList);

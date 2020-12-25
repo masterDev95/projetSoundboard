@@ -1,21 +1,25 @@
 import { Injectable } from '@angular/core';
 
-import { ISound, Sound } from './sound.model';
+import { Sound } from './sound.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SoundService {
-  soundList: Sound[] = [];
+  public soundList: Sound[] = [];
 
   constructor() {}
 
-  addSound(sound: ISound) {
-    let newSound: Sound = {
-      id: ++Sound.lastId,
-      name: sound.name,
-      duration: sound.duration
-    };
-    this.soundList.push(newSound);
+  addSound(sound: Sound) {
+    this.soundList.push(sound);
+  }
+
+  removeSound(soundId: number) {
+    for (let i = 0; i < this.soundList.length; i++) {
+      const sound = this.soundList[i];
+      if (sound.id === soundId) {
+        this.soundList.splice(i, 1);
+      }
+    }
   }
 }
