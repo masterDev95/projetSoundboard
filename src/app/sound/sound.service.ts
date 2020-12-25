@@ -3,10 +3,13 @@ import { Injectable } from '@angular/core';
 import { Sound } from './sound.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class SoundService {
-  public soundList: Sound[] = [];
+  public soundList: Sound[] = [
+    new Sound("Cyka", "6:66"),
+    new Sound("Tripaloski", '3:25')
+  ];
 
   constructor() {}
 
