@@ -1,6 +1,8 @@
 {
   "name": "projetSoundboard",
-  "integrations": {},
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "angular",
   "id": "bc8c0dca"
 }
