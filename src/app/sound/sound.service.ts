@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
+import { File } from "@ionic-native/file/ngx";
+import { Platform } from "@ionic/angular";
 
 import { Sound } from './sound.model';
+
 
 @Injectable({
   providedIn: "root",
@@ -11,7 +14,20 @@ export class SoundService {
     new Sound("Tripaloski", '3:25')
   ];
 
-  constructor() {}
+  folder = '';
+  directories = [];
+
+  constructor(
+    private file: File,
+    private platform: Platform
+  ) {
+    this.platform.ready().then(() => {
+      file.listDir(file.dataDirectory, this.folder).then(res => {
+        console.log(res);
+        this.directories = res;
+      });
+    });
+  }
 
   addSound(sound: Sound) {
     this.soundList.push(sound);
