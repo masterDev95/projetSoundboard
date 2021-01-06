@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { IonItemSliding } from '@ionic/angular';
-import { NativeAudio } from "@ionic-native/native-audio/ngx";
-import { File } from '@ionic-native/file/ngx';
+import { Media } from '@ionic-native/media/ngx';
 
 import { SoundService } from '../sound.service';
+import { Sound } from '../sound.model';
+import { StringFormatService } from 'src/app/string-format.service';
 
 @Component({
   selector: 'app-sound-list',
@@ -16,8 +17,8 @@ export class SoundListComponent implements OnInit {
 
   constructor(
     private soundService: SoundService,
-    private nativeAudio: NativeAudio,
-    private file: File
+    private media: Media,
+    public stringFormatService: StringFormatService
   ) { }
 
   ngOnInit() {}
@@ -38,12 +39,7 @@ export class SoundListComponent implements OnInit {
     }, 650);
   }
 
-  playSound(soundId: number) {
-    for (const sound of this.soundService.soundList) {
-      if (sound.id === soundId) {
-        console.log(sound.name);
-        this.nativeAudio.play(sound.name);
-      }
-    }
+  playSound(sound: Sound) {
+    this.media.create(sound.path).play();
   }
 }
