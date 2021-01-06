@@ -28,11 +28,11 @@ export class SoundAddPage implements OnInit {
 
   saveSound() {
     if (this.addSoundForm.valid) {
-      let newSound: Sound = new Sound(
-        this.addSoundForm.value.name,
-        this.addSoundForm.value.duration
-      );
-      this.soundService.addSound(newSound);
+      // let newSound: Sound = new Sound(
+      //   this.addSoundForm.value.name,
+      //   this.addSoundForm.value.duration
+      // );
+      // this.soundService.addSound(newSound);
       this.navController.navigateBack('/home');
       console.log(this.soundService.soundList);
     }
