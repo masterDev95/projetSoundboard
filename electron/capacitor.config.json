@@ -1,5 +1,5 @@
 {
-  "appId": "com.projetsoundboard.app",
+  "appId": "com.example.app",
   "appName": "projetSoundboard",
   "bundledWebRuntime": false,
   "npmClient": "npm",
@@ -9,9 +9,5 @@
       "launchShowDuration": 0
     }
   },
-  "cordova": {},
-  "server": {
-    "url": "http://192.168.1.69:8101",
-    "cleartext": true
-  }
+  "cordova": {}
 }
