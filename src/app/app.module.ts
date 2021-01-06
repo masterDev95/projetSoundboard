@@ -5,11 +5,12 @@ import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { File } from "@ionic-native/file/ngx";
+import { NativeAudio } from "@ionic-native/native-audio/ngx";
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-import { File } from "@ionic-native/file/ngx";
 
 @NgModule({
   declarations: [AppComponent],
@@ -19,6 +20,7 @@ import { File } from "@ionic-native/file/ngx";
     StatusBar,
     SplashScreen,
     File,
+    NativeAudio,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
