@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { IonItemSliding } from '@ionic/angular';
+import { NativeAudio } from "@ionic-native/native-audio/ngx";
+import { File } from '@ionic-native/file/ngx';
 
 import { SoundService } from '../sound.service';
 
@@ -12,7 +14,11 @@ export class SoundListComponent implements OnInit {
   public item: Object = {};
   
 
-  constructor(private soundService: SoundService) { }
+  constructor(
+    private soundService: SoundService,
+    private nativeAudio: NativeAudio,
+    private file: File
+  ) { }
 
   ngOnInit() {}
 
@@ -30,5 +36,14 @@ export class SoundListComponent implements OnInit {
     setTimeout(() => {
       this.soundService.removeSound(soundId);
     }, 650);
+  }
+
+  playSound(soundId: number) {
+    for (const sound of this.soundService.soundList) {
+      if (sound.id === soundId) {
+        console.log(sound.name);
+        this.nativeAudio.play(sound.name);
+      }
+    }
   }
 }

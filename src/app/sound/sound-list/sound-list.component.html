@@ -9,6 +9,9 @@
         </ion-item-options>
 
         <ion-item>
+          <ion-button (click)="playSound(sound.id)" slot="end" size="default" fill="clear">
+            <ion-icon name="play-circle-outline" slot="icon-only"></ion-icon>
+          </ion-button>
           <ion-label>
             <h2>{{ sound.name }}</h2>
             <p>Chemin: {{sound.path}}</p>
