@@ -5,7 +5,7 @@ export class Sound {
 
     constructor(
         public name: string,
-        public duration: string
+        public path: string
     ) {
         this._id = ++Sound.lastId;
     }
