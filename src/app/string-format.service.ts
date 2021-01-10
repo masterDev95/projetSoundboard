@@ -7,6 +7,12 @@ export class StringFormatService {
 
   constructor() { }
 
+  /**
+   * Returns the seconds into min:sec format.
+   *
+   * @param seconds
+   * @returns min:sec time format.
+   */
   secondsToTime(seconds: number) {
     let min = Math.floor(seconds / 60),
       sec = seconds % 60;
