@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FileChooser } from '@ionic-native/file-chooser/ngx';
 import { NavController } from '@ionic/angular';
 
 import { Sound } from '../sound.model';
@@ -16,15 +17,18 @@ export class SoundAddPage implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private soundService: SoundService,
-    private navController: NavController
-  ) {
+    private navController: NavController,
+    private fileChooser: FileChooser
+  ) { }
+
+  ngOnInit() {
     this.addSoundForm = this.formBuilder.group({
       name: ['', Validators.required],
       duration: ['', Validators.required]
     });
-  }
 
-  ngOnInit() {}
+    this.fileChooser.open().then(uri => console.log(uri));
+  }
 
   saveSound() {
     if (this.addSoundForm.valid) {
