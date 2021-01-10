@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { File } from '@ionic-native/file/ngx';
+import { Entry, File } from '@ionic-native/file/ngx';
 import { Media } from '@ionic-native/media/ngx';
 import { Platform } from '@ionic/angular';
 
+import { FileService } from '../file.service';
 import { Sound } from './sound.model';
 
 @Injectable({
@@ -14,37 +15,79 @@ export class SoundService {
   constructor(
     private platform: Platform,
     private file: File,
-    private media: Media
+    private media: Media,
+    private fileService: FileService
   ) {
+    this.fetchSound();
+  }
+
+  fetchSound() {
     if (this.platform.is('android')) {
-      this.file.listDir(this.file.applicationDirectory, 'public/assets/sounds').then(async dirEntry => {
+      // App sounds
+      this.fileService.listAppSoundDir().then(dirEntry => {
         for (const entry of dirEntry) {
-          if (entry.isFile && entry.name.slice(-4).toLowerCase() === ".mp3") {
-            let soundPath = this.file.applicationDirectory + entry.fullPath.slice(1),
-              sound = this.media.create(soundPath),
-              soundDuration: number;
+          if (this.fileService.entryIsSound(entry)) {
+            this.addSoundFromFile(entry.toURL());
+          }
+        }
+      });
 
-            sound.play();
-            sound.setVolume(0);
-            await sound.getCurrentPosition().then(position => {
-              soundDuration = sound.getDuration();
-            });
-
-            this.soundList.push(
-              new Sound(
-                entry.name.slice(0, -4),
-                Math.floor(soundDuration),
-                soundPath
-              )
-            );
+      // User sounds
+      this.fileService.listUserSoundDir().then(async dirEntry => {
+        for (const entry of dirEntry) {
+          if (this.fileService.entryIsSound(entry)) {
+            this.addSound(entry)
           }
         }
       });
     }
   }
 
-  addSound(sound: Sound) {
-    this.soundList.push(sound);
+  async addSound(file: Entry) {
+    let soundPath = this.file.externalDataDirectory + file.name,
+      sound = this.media.create(soundPath),
+      soundDuration: number;
+    
+    sound.play();
+    sound.setVolume(0);
+    
+    await sound.getCurrentPosition().then(position => {
+      soundDuration = sound.getDuration();
+    });
+
+    this.soundList.push(
+      new Sound(file.name.slice(0, -4), Math.floor(soundDuration), soundPath)
+    );
+  }
+
+  async addSoundFromFile(soundPath: string) {
+    return await this.file.resolveLocalFilesystemUrl(soundPath).then(async soundChosen => {
+      // If sound already exist
+      let soundExist = await this.fileService.listUserSoundDir().then(async soundDirEntries => {
+        for (const soundFile of soundDirEntries) {
+          if (soundChosen.name === soundFile.name) {
+            return true;
+          }
+        }
+      });
+
+      if (soundExist) return false;
+
+      let path = soundPath.slice(0, soundPath.length - soundChosen.name.length);
+
+      // Copy file to user sound directory
+      return this.file
+        .copyFile(
+          path,
+          soundChosen.name,
+          this.file.externalDataDirectory,
+          soundChosen.name
+        )
+        .then(async (copiedFile) => {
+          this.addSound(copiedFile);
+          return true;
+        });
+    });
   }
 
   removeSound(soundId: number) {

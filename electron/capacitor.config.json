@@ -1,5 +1,5 @@
 {
-  "appId": "com.example.app",
+  "appId": "com.projetsoundboard.app",
   "appName": "projetSoundboard",
   "bundledWebRuntime": false,
   "npmClient": "npm",
