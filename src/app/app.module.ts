@@ -8,6 +8,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { File } from "@ionic-native/file/ngx";
 import { NativeAudio } from "@ionic-native/native-audio/ngx";
 import { Media } from "@ionic-native/media/ngx";
+import { FileChooser } from "@ionic-native/file-chooser/ngx";
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -23,6 +24,7 @@ import { AppRoutingModule } from './app-routing.module';
     File,
     NativeAudio,
     Media,
+    FileChooser,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
