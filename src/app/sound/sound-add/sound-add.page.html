@@ -6,9 +6,13 @@
 
     <ion-title>Ajouter un son</ion-title>
 
+    <ion-button fill="cleared" slot="end" (click)="pickSound()">
+      <ion-icon name="folder-sharp" slot="icon-only" color="primary"></ion-icon>
+    </ion-button>
+
     <ion-buttons slot="end">
       <ion-button (click)="saveSound()" [disabled]="addSoundForm.invalid">
-        <ion-icon name="save-outline" slot="icon-only"></ion-icon>
+        <ion-icon name="save-sharp" slot="icon-only" color="primary"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -20,13 +24,13 @@
       <ion-col size-md="8" offset-md="2">
         <form [formGroup]="addSoundForm">
           <ion-item>
-            <ion-label position="floating">Nom</ion-label>
-            <ion-input type="text" formControlName="name"></ion-input>
+            <ion-label position="floating">Chemin</ion-label>
+            <ion-input type="text" formControlName="path" disabled></ion-input>
           </ion-item>
 
           <ion-item>
-            <ion-label position="floating">Durée</ion-label>
-            <ion-input type="duration" formControlName="duration"></ion-input>
+            <ion-label position="floating">Nom</ion-label>
+            <ion-input type="text" formControlName="name"></ion-input>
           </ion-item>
         </form>
       </ion-col>
