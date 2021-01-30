@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
 import { SoundAddPage } from './sound-add.page';
@@ -7,7 +7,7 @@ describe('SoundAddPage', () => {
   let component: SoundAddPage;
   let fixture: ComponentFixture<SoundAddPage>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SoundAddPage ],
       imports: [IonicModule.forRoot()]
