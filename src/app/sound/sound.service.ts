@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Entry, File } from '@ionic-native/file/ngx';
 import { Media } from '@ionic-native/media/ngx';
-import { LoadingController, Platform } from '@ionic/angular';
+import { AlertController, LoadingController, Platform } from '@ionic/angular';
 
 import { FileService } from '../file.service';
 import { Sound } from './sound.model';
@@ -11,13 +12,16 @@ import { Sound } from './sound.model';
 })
 export class SoundService {
   public soundList: Sound[] = [];
+  public copied: boolean = null;
 
   constructor(
     private platform: Platform,
     private file: File,
     private media: Media,
     private fileService: FileService, 
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private alertController: AlertController,
+    private router: Router
   ) {
     this.fetchSound();
   }
@@ -61,93 +65,87 @@ export class SoundService {
     );
   }
 
-  async addSoundFromFile(soundURI: string, name?: string) {
-    console.log('-----------------------------------------------------------------');
+  /**
+   * Add a sound from a file
+   *
+   * @param soundURI - URL of the sound
+   * @param [fileName] - Output file name
+   * @param [newSound] - Is it a new sound ?
+   */
+  async addSoundFromFile(soundURI: string, fileName?: string, newSound?: boolean) {
+    console.log('\n\n-----------------------------------------------------------------');
     console.log('Adding sound from file:', soundURI);
 
+    // CONTROLLERS
     const loading = await this.loadingController.create({
       message: 'Veuillez patientez...'
     });
+
+    const alreadyExistAlert = await this.alertController.create({
+      header: 'Erreur',
+      message: 'Il y a déjà un fichier du même nom.',
+      buttons: ['Ok']
+    });
+
+    const copyErrorAlert = await this.alertController.create({
+      header: 'Erreur',
+      message: 'Il y a eu un problème dans la copie du fichier.',
+      buttons: ['Ok']
+    });
+
     loading.present();
 
-    return await this.file.resolveLocalFilesystemUrl(soundURI).then(async soundChosen => {
-      let newName = name ? name + '.mp3' : soundChosen.name;
+    await this.file.resolveLocalFilesystemUrl(soundURI).then(async soundChosen => {
+      fileName = fileName || soundChosen.name;
 
-      // Check if sound already exist
+      // PART 1. Check if sound already exist
       console.log('File found:', soundChosen);
-      console.log(`Checking if user sound ${newName} exist...`);
+      console.log(`Checking if user sound ${fileName} exist...`);
 
-      let soundExist = await this.fileService.listUserSoundDir().then(async soundDirEntries => {
+      let exist = await this.fileService.listUserSoundDir().then(async soundDirEntries => {
         for (const soundFile of soundDirEntries) {
-          if (newName === soundFile.name) {
+          if (fileName === soundFile.name) {
+            console.log('❌ File exist, aborting');
+            loading.dismiss();
+
+            if (newSound) {
+              alreadyExistAlert.present();
+            }
+
             return true;
           }
         }
       });
 
-      if (soundExist) {
-        loading.dismiss();
-        console.log('❌ File exist, aborting');
-        return false;
-      }
+      if (exist) return;
 
       console.log('✔ File don\'t exist');
 
-      // Copy file to user sound directory
+      // PART 2. Copy file to user sound directory
       let path = soundChosen.nativeURL.slice(0, soundURI.length - soundChosen.name.length);
       
       console.log(`Copying: ${path}${soundChosen.name}`);
+      console.log(`to: ${this.fileService.userSoundDir}${fileName}...`);
 
-      await this.file.resolveDirectoryUrl(this.fileService.userSoundDir).then(async dirEntry => {
-        console.log(`to: ${path}${newName}...`);
-        let fileToCopy: string;
-
-        // console.log('Creating binary file...');
-        // await this.file.readAsBinaryString(path, soundChosen.name).then(
-        //   bin => fileToCopy = bin
-        // );
-        // console.log('Binary file created:', fileToCopy);
-
-        // console.log('Writing file...');
-        // await this.file.writeFile(this.fileService.userSoundDir, newName, fileToCopy).then(
-        //   copiedFile => {
-        //     console.log('File successfully copied:', copiedFile);
-        //     this.addSound(copiedFile);
-        //   }, err => console.error(err)
-        // );
-
-        this.file.copyFile(
-          path,
-          soundChosen.name,
-          dirEntry.nativeURL,
-          newName
-        ).then(copiedFile => {
-          console.log('File successfully copied:', copiedFile);
-          this.addSound(copiedFile);
-        }).catch(console.error);
-
-        loading.dismiss();
-
-        //#region 
-        // soundChosen.copyTo(
-        //   dirEntry,
-        //   newName,
-        //   copiedFile => {
-        //     loading.dismiss();
-        //     console.log('File successfully copied:', copiedFile);
-        //     this.addSound(copiedFile);
-        //     this.copyFinished = true;
-        //   },
-        //   error => {
-        //     loading.dismiss();
-        //     console.error(error);
-        //     this.copyFinished = false;
-        //   }
-        // );
-        //#endregion
+      this.file.resolveDirectoryUrl(this.fileService.userSoundDir).then(dirEntry => {
+        soundChosen.copyTo(
+          dirEntry,
+          fileName,
+          copiedFile => {
+            loading.dismiss();
+            console.log('File successfully copied:', copiedFile);
+            this.addSound(copiedFile);
+            if (newSound) {
+              this.router.navigate(['home']);
+            }
+          },
+          error => {
+            loading.dismiss();
+            copyErrorAlert.present();
+            console.error(error);
+          }
+        );
       });
-
-      return true;
     });
   }
 
