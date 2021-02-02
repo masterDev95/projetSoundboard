@@ -6,6 +6,7 @@ import { File } from '@ionic-native/file/ngx';
 
 import { FileService } from 'src/app/file.service';
 import { SoundService } from '../sound.service';
+import { FilePath } from '@ionic-native/file-path/ngx';
 
 @Component({
   selector: 'app-sound-add',
@@ -22,7 +23,8 @@ export class SoundAddPage implements OnInit {
     private file: File,
     private fileChooser: FileChooser,
     private fileService: FileService,
-    private platform: Platform
+    private platform: Platform,
+    private filePath: FilePath
   ) { }
 
   ngOnInit() {
@@ -36,15 +38,20 @@ export class SoundAddPage implements OnInit {
     if (this.platform.is('capacitor')) {
       console.log('------------------------------------------');
       console.log('Choosing file...');
-      this.fileChooser.open().then(uri => {
+
+      this.fileChooser.open().then(async uri => {
         console.log('Chosen file:', uri);
-        this.file.resolveLocalFilesystemUrl(uri).then(entry => {
-          console.log('File found:', entry);
-          if (this.fileService.entryIsSound(entry)) {
-            this.realUri = entry.nativeURL;
-            this.addSoundForm.controls['path'].setValue(entry.fullPath.split(':')[1]);
-            this.addSoundForm.controls['name'].setValue(entry.name.slice(0, -4));
-          }
+        this.realUri = uri;
+
+        await this.filePath.resolveNativePath(uri).then(path => {
+          this.file.resolveLocalFilesystemUrl(path).then(async entry => {
+            console.log('File found:', entry);
+
+            if (this.fileService.entryIsSound(entry)) {
+              this.addSoundForm.controls['path'].setValue(entry.fullPath);
+              this.addSoundForm.controls['name'].setValue(entry.name.slice(0, -4));
+            }
+          });
         });
       });
     } else {
