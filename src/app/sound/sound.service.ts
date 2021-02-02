@@ -51,18 +51,24 @@ export class SoundService {
   async addSound(file: Entry) {
     let soundPath = this.file.externalDataDirectory + file.name,
       sound = this.media.create(soundPath),
-      soundDuration: number;
+      soundDuration = -1;
     
     sound.play();
     sound.setVolume(0);
-    
-    await sound.getCurrentPosition().then(position => {
-      soundDuration = sound.getDuration();
-    });
 
-    this.soundList.push(
-      new Sound(file.name.slice(0, -4), Math.floor(soundDuration), soundPath)
-    );
+    // ? Get sound duration and add it
+    let interval = setInterval(() => {
+      if(soundDuration == -1) {
+        soundDuration = sound.getDuration();
+      } else {
+        sound.stop();
+        sound.setVolume(1.0);
+        this.soundList.push(
+          new Sound(file.name.slice(0, -4), Math.floor(soundDuration), soundPath)
+        );
+        clearInterval(interval);
+      }
+    }, 10);
   }
 
   /**
