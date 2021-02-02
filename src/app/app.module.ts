@@ -11,6 +11,7 @@ import { Media } from "@ionic-native/media/ngx";
 import { FileChooser } from "@ionic-native/file-chooser/ngx";
 import { AndroidPermissions } from "@ionic-native/android-permissions/ngx";
 import { FilePath } from "@ionic-native/file-path/ngx";
+import { SocialSharing } from "@ionic-native/social-sharing/ngx";
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -29,6 +30,7 @@ import { AppRoutingModule } from './app-routing.module';
     FileChooser,
     AndroidPermissions,
     FilePath,
+    SocialSharing,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

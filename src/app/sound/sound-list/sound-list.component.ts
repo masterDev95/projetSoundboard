@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, IonItemSliding } from '@ionic/angular';
+import { AlertController, IonItem, IonItemSliding } from '@ionic/angular';
 import { Media } from '@ionic-native/media/ngx';
+import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 
 import { SoundService } from '../sound.service';
 import { Sound } from '../sound.model';
@@ -19,6 +20,7 @@ export class SoundListComponent implements OnInit {
     private soundService: SoundService,
     private media: Media,
     private alertController: AlertController,
+    private socialSharing: SocialSharing,
     public stringFormatService: StringFormatService
   ) { }
 
@@ -65,5 +67,15 @@ export class SoundListComponent implements OnInit {
 
   playSound(sound: Sound) {
     this.media.create(sound.path).play();
+  }
+
+  shareSound(soundPath: string, slider: IonItemSliding) {
+    this.socialSharing.share(
+      '',
+      '',
+      soundPath
+    );
+
+    slider.close();
   }
 }
