@@ -150,11 +150,27 @@ export class SoundService {
   }
 
   removeSound(soundId: number) {
+    let soundName: string;
+
     for (let i = 0; i < this.soundList.length; i++) {
       const sound = this.soundList[i];
       if (sound.id === soundId) {
         this.soundList.splice(i, 1);
+        soundName = sound.name;
       }
     }
+
+    this.fileService.listUserSoundDir().then(dirEntry => {
+      for (const entry of dirEntry) {
+        if (entry.name.slice(0, -4) === soundName) {
+          entry.remove(
+            () => {
+              console.log(entry.name, 'successfully removed !');
+            },
+            console.error
+          );
+        }
+      }
+    })
   }
 }

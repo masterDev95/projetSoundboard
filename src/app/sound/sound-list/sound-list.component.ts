@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IonItemSliding } from '@ionic/angular';
+import { AlertController, IonItemSliding } from '@ionic/angular';
 import { Media } from '@ionic-native/media/ngx';
 
 import { SoundService } from '../sound.service';
@@ -18,6 +18,7 @@ export class SoundListComponent implements OnInit {
   constructor(
     private soundService: SoundService,
     private media: Media,
+    private alertController: AlertController,
     public stringFormatService: StringFormatService
   ) { }
 
@@ -27,16 +28,39 @@ export class SoundListComponent implements OnInit {
     return this.soundService.soundList;
   }
 
-  deleteSound(soundId: number, itemIndex: number, slider: IonItemSliding) {
-    let item = document.querySelector(`ion-col[id="item${itemIndex}"]`);
-    let attr = item.getAttribute('class');
+  async deleteSound(soundId: number, itemIndex: number, slider: IonItemSliding) {
+    let item = document.querySelector(`ion-col[id="item${itemIndex}"]`),
+      attr = item.getAttribute('class'),
+      soundName: string;
 
-    slider.close();
-    item.setAttribute('class', attr + ' remove');
+    for (const sound of this.sounds) {
+      if (soundId === sound.id) {
+        soundName = sound.name;
+      }
+    }
 
-    setTimeout(() => {
-      this.soundService.removeSound(soundId);
-    }, 650);
+    const deleteConfirmAlert = await this.alertController.create({
+      header: 'Confirm!',
+      message: `Êtes-vous sur de vouloir supprimer ${soundName} ?`,
+      buttons: [
+        {
+          text: 'Non',
+          role: 'cancel'
+        }, {
+          text: 'Oui',
+          handler: () => {
+            slider.close();
+            item.setAttribute('class', attr + ' remove');
+
+            setTimeout(() => {
+              this.soundService.removeSound(soundId);
+            }, 650);
+          }
+        }
+      ]
+    });
+
+    deleteConfirmAlert.present();
   }
 
   playSound(sound: Sound) {
