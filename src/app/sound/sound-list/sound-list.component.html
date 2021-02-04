@@ -15,9 +15,29 @@
         </ion-item-options>
 
         <ion-item>
-          <ion-button (click)="playSound(sound)" slot="end" size="default" fill="clear">
-            <ion-icon name="play-circle-outline" slot="icon-only"></ion-icon>
+          <ng-container *ngIf="soundIsNotFinished(sound.id)">
+            <ion-button (click)="stopSound(sound.id)" slot="end" fill="clear" class="ion-no-margin">
+              <ion-icon name="stop-circle-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ng-container>
+
+          <ng-container *ngIf="!soundIsPlaying(sound.id)">
+            <ion-button (click)="playSound(sound)" slot="end" fill="clear" class="ion-no-margin">
+              <ion-icon name="play-circle-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ng-container>
+
+          <ng-container *ngIf="soundIsPlaying(sound.id)">
+            <ion-button (click)="pauseSound(sound.id)" slot="end" fill="clear" class="ion-no-margin">
+              <ion-icon name="pause-circle-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ng-container>
+
+          <ion-button (click)="spamSound(sound.path)" slot="end" size="small" fill="clear" class="ion-no-margin">
+            <ion-label style="margin-right: 4px;">Spam</ion-label>
+            <ion-icon name="warning-sharp"></ion-icon>
           </ion-button>
+
           <ion-label>
             <h2>{{ sound.name }}</h2>
             <p>Durée: {{ this.stringFormatService.secondsToTime(sound.duration) }}</p>
