@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AlertController, IonItem, IonItemSliding } from '@ionic/angular';
-import { Media } from '@ionic-native/media/ngx';
+import { Media, MediaObject, MEDIA_STATUS } from '@ionic-native/media/ngx';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 
 import { SoundService } from '../sound.service';
 import { Sound } from '../sound.model';
 import { StringFormatService } from 'src/app/string-format.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sound-list',
@@ -14,17 +15,19 @@ import { StringFormatService } from 'src/app/string-format.service';
 })
 export class SoundListComponent implements OnInit {
   public item: Object = {};
-  
+  public medias: MediaObject[] = [];
+  public soundsStatus: MEDIA_STATUS[] = [];
 
   constructor(
     private soundService: SoundService,
     private media: Media,
     private alertController: AlertController,
     private socialSharing: SocialSharing,
+    private changeDetector: ChangeDetectorRef,
     public stringFormatService: StringFormatService
   ) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   get sounds() {
     return this.soundService.soundList;
@@ -66,7 +69,37 @@ export class SoundListComponent implements OnInit {
   }
 
   playSound(sound: Sound) {
-    this.media.create(sound.path).play();
+    if (!this.medias[sound.id]) {
+      this.medias[sound.id] = this.media.create(sound.path);
+      this.medias[sound.id].onStatusUpdate.subscribe(status => {
+        this.soundsStatus[sound.id] = status;
+        this.changeDetector.detectChanges();
+      });
+    }
+    this.medias[sound.id].play();
+  }
+
+  pauseSound(soundId: number) {
+    this.medias[soundId].pause();
+  }
+
+  spamSound(soundPath: string) {
+    this.media.create(soundPath).play();
+  }
+
+  stopSound(soundId: number) {
+    this.medias[soundId].stop();
+  }
+
+  soundIsPlaying(soundId: number) {
+    return this.soundsStatus[soundId] === this.media.MEDIA_RUNNING;
+  }
+
+  soundIsNotFinished(soundId: number) {
+    return (
+      this.soundsStatus[soundId] === this.media.MEDIA_RUNNING ||
+      this.soundsStatus[soundId] === this.media.MEDIA_PAUSED
+    );
   }
 
   shareSound(soundPath: string, slider: IonItemSliding) {
